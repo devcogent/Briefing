@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_Auth.cshtml";
+}
+<div class="login-box">
+    <div class="login-logo">
+        <img src="~/dist/img/Cogent.png" alt="Cogent E Services" width="120" height="50">
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">!! Welcome To Login !!</p>
+
+            <form action="Login" method="post" id="login">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="EmployeeID" placeholder="Enter EmployeeID">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" name="Password" placeholder="Password">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-ingo btn-block-sm float-center">Log In</button>
+                        </div>
+
+                        @*  <div class="col-6">
+                        <a href="/Home/ForgotPassword">forgot password ?</a>
+                        </div> *@
+                        <!-- /.col -->
+                        @*  <div class="col-6">
+                        <a href="Register" class="float-right">Register ?</a>
+                        </div> *@
+                        <!-- /.col -->
+                        <!-- /.col -->
+                    </div>
+            </form>
+
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+</div>

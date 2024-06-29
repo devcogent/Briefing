@@ -1,0 +1,180 @@
+﻿@model List<Acknowledgement>
+@{
+    ViewData["Title"] = "Briefing Acknowledgement";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title">Acknowledgement</h2>
+                    </div>
+
+                    <div class="card-body responsive">
+                        <form id="quickForm">
+                            <div class="row">
+                                <div class="col-lg-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Brifing List</label>
+                                        <select class="form-control select2bs4" name="briefing" id="briefing" style="width: 100%;">
+                                            <option value="">Please Select Briefing</option>
+                                        </select>
+                                    </div>
+                                 </div>
+                                <div class="col-lg-6 col-sm-6 col-md-6 mt-2">
+                                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body tbl">
+                        <div class="spinner-border text-primary loader" role="status">
+                            <span class="visually-hidden"></span>
+                        </div>
+                        <table class="table table-bordered responsive" id="exampl">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No</th>
+                                    <th>Employee ID </th>
+                                    <th>Employee Name</th>
+                                    <th>Briefing Name</th>
+                                    <th>Created Date</th>
+                                    <th>Start Date</th>
+                                    <th>Acknowledge Date</th>
+                                    <th>Briefing For</th>
+                                    <th>Report To</th>
+                                    <th>Uploaded By</th>
+                                    <th>Process</th>
+                                    <th>Sub Process</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                </tbody>
+                         </table>
+                    </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+    </div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+
+        $(function () {
+
+            $('#reservationdate1').datetimepicker({
+                format: 'DD-MM-YYYY'
+            });
+            $('#reservationdate').datetimepicker({
+                format: 'DD-MM-YYYY'
+            });
+
+
+            $.ajax({
+                url: "/Briefings/GetBriefing",
+                type: "GET",
+                success: function (response) {
+
+                    $.each(response, function (key, value) {
+                      $('#briefing').append('<option value="' + value.id + '">' + value.heading +'</option>')
+                    });
+
+                }
+            });
+
+            $('#quickForm').validate({
+                rules: {
+                    briefing: {
+                        required: true,
+                    },
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+  </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.tbl').hide();
+
+            $('#quickForm').submit(function (e) {
+                e.preventDefault();
+                var briefing = $('#briefing').val();
+
+             if ($('#quickForm').valid()) {
+                    $('.tbl').show();
+                    $.ajax({
+                        url: 'Acknowledgement', // Update with your controller action URL
+                        method: 'GET',
+                        data: { briefing: briefing },
+                        success: function (data) {
+                            $('#exampl').DataTable({
+                                dom: 'Bfrtip',
+                                buttons: [{
+                                    extend: 'collection',
+                                    text: 'Export',
+                                    buttons: [{
+                                        extend: 'excel',
+                                        title: 'Data export',
+                                        exportOptions: {
+                                            columns: "thead th:not(.noExport)"
+                                        }
+                                    }, {
+                                        extend: 'csv',
+                                        title: 'Data export',
+                                        exportOptions: {
+                                            columns: "thead th:not(.noExport)"
+                                        }
+                                    }]
+                                }],
+                                destroy: true, // Destroy existing DataTable (if any)
+                                data: data,
+                                columns: [
+                                    { data: 'id' },
+                                    { data: 'employeeid' },
+                                    { data: 'employeename' },
+                                    { data: 'heading' },
+                                    { data: 'createdon' },
+                                    { data: 'fromdate' },
+                                    { data: 'acknowledge' },
+                                    { data: 'viewfor' },
+                                    { data: 'reportto' },
+                                    { data: 'createdby' },
+                                    { data: 'process' },
+                                    { data: 'subprocess' }
+                                ],
+                               
+                            });
+
+                            $('.loader').hide();
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                            $('.loader').hide();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

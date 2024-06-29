@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - Briefing Master | Dashboard</title>
+    <!-- Google Font: Source Sans Pro -->
+@*     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+ *@    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    @* <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> *@
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="~/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="~/plugins/summernote/summernote-bs4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="~/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="~/plugins/dropzone/min/dropzone.min.css">
+    <link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="~/plugins/toastr/toastr.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed text-sm sidebar-collapse">
+
+    @{
+        var userName = Context.Session.GetString("empName");
+        var userId = Context.Session.GetString("empID");
+        var Usertype = Context.Session.GetString("userType");
+        
+
+        if (userName == null && userId == null)
+        {
+            // Context.Response.Redirect("/Home/Login");
+                 <script>
+                   var baseUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+                   if (window.location.port) {
+                    window.location.href = baseUrl + '/Home/Login';
+                    } else {
+                    window.location.href = baseUrl + '/briefing/Home/Login';
+                    }
+                </script>
+        }
+    }
+
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shakel" src="~/dist/img/logo-red-black.png" height="60" width="60" alt="Cogent">
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;
+                        <span>&nbsp;@userName</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                        @*   <a href="/Home/ChangePassword" class="dropdown-item">
+                        Change Password
+                        </a>
+                        <div class="dropdown-divider"></div> *@
+                        <a href="/Home/Logout" class="dropdown-item">
+                            Log Out
+                        </a>
+                    </div>
+                </li>
+
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <div class="user-panel d-flex" style="background-color: white;height: 3.6rem;">
+                <!-- For Small Logo -->
+                <img src="~/dist/img/logo_1.png" alt="Cogent Logo" class="brand-image-xs logo-xs mt-2" style="height: 1.6rem;width: 2.6rem;margin-left: -0.2rem;">
+                <!-- For Big Logo -->
+                <img src="~/dist/img/Cogent.png" alt="Cogent Logo" class="brand-image-xl logo-xl" style="height: 2.7rem;width: 6rem;margin-left: 4rem">
+            </div>
+
+            @{
+                var action = ViewContext.RouteData.Values["action"].ToString();
+                var controller = ViewContext.RouteData.Values["controller"].ToString();
+            }
+            <!-- Sidebar -->
+            <div class="sidebar">
+                
+               
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                             with font-awesome or any other icon font library -->
+                        <li class="nav-item">
+                            <a asp-controller="Home" asp-action="Index" class="nav-link @(action == "Index" && controller == "Home" ? "active" : "")">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>
+                                    Dashboard
+                                </p>
+                            </a>
+                        </li>
+
+                            <li class="nav-item">
+                            <a class="nav-link @(action == "Index" && controller == "Briefings" ? "active" : "")" asp-controller="Briefings" asp-action="Index">
+                                    <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+
+                                @if (Usertype == "1")
+                                    {
+                                    <p>
+                                        Briefing Master
+                                    </p>
+                                    }
+                                    else
+                                    {
+                                    <p>
+                                        Attempt Briefing
+                                    </p>
+                                    }
+
+                                    
+                                </a>
+                            </li>
+
+                        @if (Usertype == "1")
+                        {
+
+                            <li class="nav-item">
+                                <a class="nav-link @(action == "Assign" && controller == "Briefings" ? "active" : "")" asp-controller="Briefings" asp-action="Assign">
+                                    <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+                                    <p>
+                                        Assign Breifing
+                                    </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link @(action == "AddUser" && controller == "Home" ? "active" : "")" asp-action="AddUser" asp-controller="Home">
+                                    <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+                                    <p>User Management</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="Briefings" asp-action="CoverageReport" class="nav-link @(action == "CoverageReport" && controller == "Briefings" ? "active" : "")">
+                                    <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+                                    <p>
+                                        Coverage Reports
+                                    </p>
+                                </a>
+                            </li>
+
+                            
+
+                            <li class="nav-item">
+                                <a asp-controller="Briefings" asp-action="Acknowledgement" class="nav-link @(action == "Acknowledgement" && controller == "Briefings" ? "active" : "")">
+                                    <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+                                    <p>
+                                        Briefing Acknowledge
+                                    </p>
+                                </a>
+                             </li>
+                         }
+                        else
+                        {
+                           
+                            <li class="nav-item">
+                                <a asp-controller="Briefings" asp-action="Search" class="nav-link @(action == "Search" && controller == "Briefings" ? "active" : "")">
+                                    <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+                                    <p>
+                                       Acknowledged Briefing 
+                                    </p>
+                                </a>
+                            </li>
+                         }
+     
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                           @*  <h1 class="m-0">@ViewData["Title"]</h1> *@
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="/Home">Home</a></li>
+                                <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+            <!-- Main content -->
+
+
+            <div class="container">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+            <!-- /.content -->
+        </div>
+
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <strong>
+                Copyright &copy; @DateTime.Today.ToString("yyyy")
+
+                <a href="/">Cogent E Service Ltd</a>.
+            </strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                @*      <b>Version</b> 3.2 *@
+            </div>
+        </footer>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+
+
+
+    <!-- ./wrapper -->
+    <!-- jQuery -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="~/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <!-- Bootstrap 4 -->
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- ChartJS -->
+    <script src="~/plugins/chart.js/Chart.min.js"></script>
+    <!-- Sparkline -->
+    <script src="~/plugins/sparklines/sparkline.js"></script>
+    <!-- JQVMap -->
+    <!-- daterangepicker -->
+    <script src="~/plugins/moment/moment.min.js"></script>
+    <script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Summernote -->
+    <script src="~/plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- overlayScrollbars -->
+    <script src="~/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/dist/js/adminlte.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    @* <script src="~/dist/js/pages/dashboard.js"></script> *@
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/plugins/toastr/toastr.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+    <script src="~/plugins/jszip/jszip.min.js"></script>
+    <script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- AdminLTE App -->
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                toastr.error("@ViewBag.Message");
+            };
+        </script>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                toastr.success("@TempData["Success"]");
+            };
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                toastr.warning("@TempData["Error"]");
+            };
+        </script>
+    }
+
+    <script>
+        $(function () {
+
+            $('#endDate').datetimepicker({
+                format: 'DD-MM-YYYY HH:mm:ss'
+            });
+
+            $('#startDate').datetimepicker({
+                format: 'DD-MM-YYYY HH:mm:ss'
+            });
+
+
+
+
+            $('#start_date').datetimepicker({
+                format: 'DD-MM-YYYY hh:mm:ss',
+                minDate: moment().startOf('day'),
+                icons: { time: 'far fa-clock' },
+            });
+
+
+            $('#end_date').datetimepicker({
+                format: 'DD-MM-YYYY hh:mm:ss',
+                minDate: moment().startOf('day'),
+                useCurrent: false,
+                icons: { time: 'far fa-clock' },
+            });
+
+
+
+            //  $("#start_date").on("change", function (e) {
+            //     $('#end_date').minDate(e.date);
+            // });
+
+            // Add event listener to end datetimepicker to validate against start datetimepicker
+            // $("#end_date").on("change", function (e) {
+            //    var endDate = e.date;
+            //   var startDate = $('#start_date').date();
+            //   if (startDate && endDate < startDate) {
+            //       $('#end_date').val('');
+            //      alert("End date and time cannot be earlier than start date and time.");
+            //  }
+            // });
+
+
+
+
+
+
+
+            // Summernote
+            $('#summernote').summernote();
+            // CodeMirror
+            //$('.select2').select2();
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
+
+            $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+            $('#example2').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+
+
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

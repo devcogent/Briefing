@@ -1,0 +1,387 @@
+﻿@model IEnumerable<Briefing.Models.Entities.Briefings>
+@{
+    ViewData["Title"] = "Briefing Search";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-12">
+
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa fa-search" aria-hidden="true"></i> &nbsp;Search Previous Briefing</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="quickForm" asp-action="Search" type="POST">
+                            <div class="row">
+                                
+                                <div class="col-4">
+                                    <select class="form-control form-select select2bs4" name="month">
+                                        <option value="">Select Month</option>
+                                        <option value="01">January</option>
+                                        <option value="02">February</option>
+                                        <option value="03">March</option>
+                                        <option value="04">Aprail</option>
+                                        <option value="05">May</option>
+                                        <option value="06">June</option>
+                                        <option value="07">July</option>
+                                        <option value="08">August</option>
+                                        <option value="09">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <select class="form-control form-select select2bs4" name="year">
+                                        <option value="">Select Year</option>
+                                        @{
+                                            int CurrentYear = DateTime.Now.Year;
+                                            for (int i = 2024; i <= CurrentYear; i++)
+                                            {
+                                                <option value="@i.ToString()">@i.ToString()</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-primary" type="submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa fa-list" aria-hidden="true"></i>&nbsp;Briefing List</h2>
+                        <p class="float-right">
+                            @* <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default">
+                            Add New
+                            </button> *@
+                            @*data-toggle="modal" data-target="#modal-default"*@
+                        </p>
+                    </div>
+                    <!-- /.card-header -->
+                    @if (ViewBag.Briefings != null)
+                    {
+                        <div class="card-body">
+                            <div class="panel-group" id="accordion">
+                                @{
+                                    var index = 1;
+                                    var index2 = 2;
+                                }
+
+
+
+                                @foreach (var item in ViewBag.Briefings)
+                                {
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_@index">
+                                                    <span class="d-block bg-primary text-white">@item.Heading
+                                                        @if (item.Acknowledge == "Yes")
+                                                        {
+                                                            <span class="badge badge-success float-right">
+                                                                Acknowledged
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-danger float-right">
+                                                                Pending Acknowledge
+                                                            </span>
+                                                        }
+
+                                                    </span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div id="collapse_@index" class="panel-collapse collapse in">
+
+                                            <div class="card">
+
+                                                <div class="card-body" id="Briefdiv_@item.BriefingId" style="display:block">
+                                                    <div class="row">
+                                                        <input type="hidden" id="brifingID" />
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <textarea class="form-control" rows="3" readonly>@item.Remark1</textarea>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <textarea class="form-control" rows="3" readonly>@item.Remark2</textarea>
+                                                            </div>
+                                                            @if (!string.IsNullOrEmpty(item.UploadedFile))
+                                                            {
+                                                                <div class="form-group">
+                                                                    <iframe src="~/BrifingDocs/@item.UploadedFile" &embedded="true" style="width:99%; height:300px;" frameborder="0"></iframe>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    @if (item.Acknowledge == "Yes")
+                                                    {
+                                                        <button class="btn btn-success disabled">Acknowledged</button>
+                                                        <br />
+                                                        <span class="text-success">Acknowledged On &nbsp; @{
+                                                                @Convert.ToDateTime(item.AcknowledgeDate)
+                                                                ;
+                                                            }</span>
+
+                                                        if (item.Quiz == "Yes" && !string.IsNullOrEmpty(item.Quiz))
+                                                        {
+                                                            <a style="cursor:pointer;font-weight: bold; color: #1c94c4; " title="Click me"
+                                                            onclick="gotoQuiz('@item.BriefingId')">Go to Quiz</a>
+                                                        }
+
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <a id="acck_@item.BriefingId" style="cursor:pointer;font-weight: bold; color: #1c94c4; " title="Click me"
+                                                        onclick="acknowledgeBrf('@item.BriefingId','@item.CmID','@item.CmID')">Acknowledge</a>
+                                                    }
+
+
+                                                </div>
+
+
+                                                @if (item.Quiz == "Yes" && !string.IsNullOrEmpty(item.Quiz))
+                                                {
+
+
+                                                    if (item.Questions != null)
+                                                    {
+
+                                                        <div class="card-body" id="Quizdiv_@item.BriefingId" style="display:none">
+                                                            <form id="quickForm" action="/Briefings/QuizSubmit" class="div_@index" method="POST" enctype="multipart/form-data">
+                                                                @Html.AntiForgeryToken()
+
+                                                                @{
+                                                                    var QIndex = 0;
+                                                                    var Q = 1;
+                                                                }
+                                                                @foreach (var item2 in item.Questions)
+                                                                {
+                                                                    <div class="col-md-12 question-group" id="question">
+                                                                        <input type="hidden" name="[@QIndex].BriefingId" value="@item.BriefingId" />
+                                                                        <div class="form-group">
+                                                                            <input type="hidden" name="[@QIndex].QuestionID" class="form-control" value="@item2.Id">
+                                                                            <span>
+                                                                                Q&nbsp;@Q.&nbsp; @item2.Question <p class="float-right">
+                                                                                    @if (item.QuizAttempted == "Yes" && !string.IsNullOrEmpty(item.QuizAttempted))
+                                                                                    {
+                                                                                        <span class="badge badge-info">Option @item2.Answer Was Correct Answer</span>
+                                                                                    }
+                                                                                </p>
+                                                                            </span>
+
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-6">
+                                                                                <div class="form-group">
+                                                                                    <input type='radio'  name="[@QIndex].Answer" value="1" title="OptionA">
+                                                                                    <label for="exampleInputPassword1">@item2.Option1</label>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <input type='radio' name="[@QIndex].Answer" value="2" title="OptionA">
+                                                                                    <label for="exampleInputPassword1">@item2.Option2</label>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-md-6">
+                                                                                <div class="form-group">
+                                                                                    <input type='radio' name="[@QIndex].Answer" value="3" title="OptionA">
+                                                                                    <label for="exampleInputPassword1">@item2.Option3</label>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <input type='radio' name="[@QIndex].Answer" value="4" title="OptionA">
+                                                                                    <label for="exampleInputPassword1">@item2.Option4</label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    QIndex++;
+
+                                                                    Q++;
+                                                                }
+                                                                @if (item.QuizAttempted == "Yes" && !string.IsNullOrEmpty(item.QuizAttempted))
+                                                                {
+                                                                    <button class="btn btn-success disabled" type="button">Attempted</button>
+                                                                    <br />
+                                                                    <span class="text-success">
+                                                                        Attempted On &nbsp; @{
+                                                                            @Convert.ToDateTime(item.AttemptedDate)
+                                                                            ;
+                                                                        }
+                                                                    </span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <button class="btn btn-success" type="submit">Submit</button>
+                                                                }
+                                                                <a style="cursor:pointer;font-weight: bold; color: #1c94c4; " title="Click me"
+                                                                onclick="goBack('@item.BriefingId')">Go Back</a>
+                                                            </form>
+
+                                                        </div>
+
+                                                    }
+
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    index++;
+                                    index2++;
+                                }
+
+
+
+
+
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    }
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(function () {
+            $('#quickForm').validate({
+                rules: {
+                    status: {
+                        required: true,
+                    },
+                    month: {
+                        required: true,
+                    },
+                    year: {
+                        required: true
+                    },
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+
+        function gotoQuiz(brifID) {
+            $('#Briefdiv_' + brifID).slideUp("slow");
+            $('#Quizdiv_' + brifID).slideDown("slow");
+         }
+
+
+        function goBack(brifID) {
+            $('#Briefdiv_' + brifID).slideDown("slow");
+            $('#Quizdiv_' + brifID).slideUp("slow");
+         }
+
+        function acknowledgeBrf(brifID, cmid, cim) {
+            $('#Briefdiv_' + brifID).slideUp("slow");
+
+            $.ajax({
+                url: "/Briefings/AcknowledgeBrief/" + parseInt(brifID),
+                type: "GET",
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+
+
+
+                        //$.ajax({
+                            //url: "Briefings/GetQuestion/" + brifID,
+                            //type: "GET",
+                           // success: function (response) {
+                              //  $('#Quizdiv_' + brifID).slideDown("slow");
+                              //  var questionHtml = `<form id="quickForm" action="/Briefings/QuizSubmit" class="div_index" method="POST" enctype="multipart/form-data">@Html.AntiForgeryToken()`;
+                              //  if (response.length > 0 && response.length != 0) {
+                                  //  for (var i = 0; i < response.length; i++) {
+                                   //     questionHtml += `<div class="col-md-12 question-group" id="question">
+                                                                                                                      //  <input type="hidden" name="[`+ i + `].BriefingId" value="` + response[i].briefingID + `"/>
+                                                                                       // <div class="form-group">
+                                                                                       //                <input type="hidden" name="[`+ i + `].QuestionID" class="form-control" value="` + response[i].id + `">
+                                                                                         //      <span>Q&nbsp;`+ (i + 1) + `.&nbsp;` + response[i].question + `</span>
+                                                                                       // </div>
+                                                                            // <div class="row">
+                                                                            // <div class="col-md-6">
+                                                                            //    <div class="form-group">
+                                                                             //               <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"  name="[` + i + `].Answer"  value="1" title="OptionA">
+                                                                                 //           <label for="exampleInputPassword1">`+ response[i].option1 + `</span>
+                                                                               // </div>
+                                                                               // <div class="form-group">
+                                                                                //           <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"  name="[` + i + `].Answer" value="2" title="OptionB">
+                                                                               //            <label for="exampleInputPassword1">`+ response[i].option2 + `</span>
+                                                                               // </div>
+                                                                            // </div>
+
+                                                                            //<div class="col-md-6">
+                                                                             //   <div class="form-group">
+                                                                              //             <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"  name="[` + i + `].Answer" value="3" title="OptionC">
+                                                                              //             <label for="exampleInputPassword1">`+ response[i].option3 + `</span>
+                                                                              //  </div>
+                                                                               // <div class="form-group">
+                                                                                //           <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"    name="[` + i + `].Answer"  value="4" title="OptionD">
+                                                                                //           <label for="exampleInputPassword1">`+ response[i].option4 + `</span>
+                                                                              //  </div>
+                                                                           // </div>
+                                                                         // </div>
+                                                                        //</div>`;
+                            //        }
+                            //        questionHtml += `<button class="btn btn-success" type="submit">Submit</button>`;
+                            //        questionHtml += `</form>`;
+                           //     }
+
+                          //      $('#Quizdiv_' + brifID).append(questionHtml);
+                         //   }
+                        //});
+
+
+
+
+
+
+                    }
+                    if (response.error) {
+                        $('#Briefdiv_' + brifID).slideDown("slow");
+                        toastr.error(response.message);
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+

@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (Context.Session.GetString("empID") == Context.Session.GetString("QH") || Context.Session.GetString("empID") == Context.Session.GetString("AH") ||
+Context.Session.GetString("empID") == Context.Session.GetString("QH") || Context.Session.GetString("empID") == Context.Session.GetString("TH"))
+{
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Small boxes (Stat box) -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            @if (ViewData["NoBriefing"] != null)
+                            {
+                                <h3>@Html.ViewData["NoBriefing"]</h3>
+                            }
+                            <p>Total Briefing</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-bag"></i>
+                        </div>
+                        <a href="/" class="small-box-footer"><i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+               
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            @if (ViewData["ackbrief"] != null)
+                            {
+                                <h3>@Html.ViewData["ackbrief"]</h3>
+                            }
+                            <p>Total Acknowledge</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-person-add"></i>
+                        </div>
+                        <a href="/" class="small-box-footer"><i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+            <!-- /.row -->
+            <!-- Main row -->
+            <div class="row">
+                <!-- Left col -->
+                <!-- right col -->
+            </div>
+            <!-- /.row (main row) -->
+        </div><!-- /.container-fluid -->
+    </section>
+}
+else
+{
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Small boxes (Stat box) -->
+            <div class="row">
+           
+                <!-- ./col -->
+           <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+            <div class="inner">
+            @if (ViewData["NoBriefEMP"] != null)
+            {
+                                <h3>@Html.ViewData["NoBriefEMP"]</h3>
+                            }
+                            else
+                            {
+                                <h3>0</h3>
+                            }
+            <p>No Of Briefing</p>
+            </div>
+            <div class="icon">
+            <i class="ion ion-stats-bars"></i>
+            </div>
+                        <a href="javaScript:void(0)" class="small-box-footer"><i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+            </div>
+                <!-- ./col -->
+                                <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+            <div class="inner">
+           @if (ViewData["ackcountEmp"] != null)
+            {
+                 <h3>@Html.ViewData["ackcountEmp"]</h3>
+                            }
+                            else
+                            {
+                                <h3>0</h3>
+                            }
+                            <p>Attempted Briefing</p>
+            </div>
+            <div class="icon">
+            <i class="ion ion-person-add"></i>
+            </div>
+                        <a href="javaScript:void(0)" class="small-box-footer"><i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+            </div>
+                <!-- ./col -->
+           
+                <!-- ./col -->
+            </div>
+            <!-- /.row -->
+            <!-- Main row -->
+            <div class="row">
+                <!-- Left col -->
+                <!-- right col -->
+            </div>
+            <!-- /.row (main row) -->
+        </div><!-- /.container-fluid -->
+    </section>
+}
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+<script>
+    $(function () {
+        $('#quickForm').validate({
+            rules: {
+                status: {
+                    required: true,
+                },
+                month: {
+                    required: true,
+                },
+                year: {
+                    required: true
+                },
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
+        });
+    });
+</script>
+}

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Briefing.Models.BriefReport>
+@{
+    ViewData["Title"] = "Briefing Reports";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title">Briefing Reports</h2>
+                        <p class="float-right">
+                            @* <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default">
+                            Add New
+                            </button> *@
+                            @*data-toggle="modal" data-target="#modal-default"*@
+                        </p>
+                    </div>
+
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table class="table table-bordered" id="example2">
+                            <thead>
+                                <tr>
+                                    <th>Sr.No.</th>
+                                    <th>Briefing</th>
+                                    <th>Acknowledge Date & Time</th>
+                                    <th>Quiz Available</th>
+                                    <th>Quiz Attemted</th>
+                                    <th>Quiz Attemted Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @if(Model != null)
+                                {
+                                    @foreach(var item in Model)
+                                    {
+                                     <tr>
+                                    <td>@index</td>
+                                    <td>@item.Briefing</td>
+                                    <td>@item.Acknowledge</td>
+                                    <td>@item.Quiz</td>
+                                    <td>@item.Attempted</td>
+
+                                            <td>@if (item.Attempted == "Yes")
+                                                {
+                                                    @item.AttemptedDate
+                                                }
+                                                else
+                                                {
+                                                
+                                                }
+                                            </td>
+                                        </tr>
+                                        index++;
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>

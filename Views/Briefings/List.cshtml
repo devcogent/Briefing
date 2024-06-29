@@ -1,0 +1,299 @@
+﻿@model IEnumerable<Briefing.Models.Entities.Briefings>
+@{
+    ViewData["Title"] = "Briefing List";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title">Briefing List</h2>
+                        <p class="float-right">
+                            @* <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default">
+                                Add New
+                            </button> *@
+                            @*data-toggle="modal" data-target="#modal-default"*@
+                        </p>
+                    </div>
+                  
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="panel-group" id="accordion">
+                            @{
+                                var index = 1;
+                                var index2 = 2;
+                            }
+                            @if (Model != null)
+                        {
+                            @foreach (var item in Model)
+                            {
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_@index">
+                                                    <span class="d-block p-2 bg-primary text-white">@item.Heading <p class="float-right">Strat Date Time &nbsp;:&nbsp;@item.FromDate</p></span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div id="collapse_@index" class="panel-collapse collapse in">
+
+                                            <div class="card">
+                                                
+                                                <div class="card-body" id="Briefdiv_@item.Id" style="display:block">
+                                                            <div class="row">
+                                                                <input type="hidden" id="brifingID"/>
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <textarea class="form-control"  rows="3" readonly>@item.Remark1</textarea>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <textarea class="form-control"  rows="3" readonly>@item.Remark2</textarea>
+                                                                    </div>
+                                                                @if (!string.IsNullOrEmpty(item.UploadedFile))
+                                                                {
+                                                                    <div class="form-group">
+                                                                        <iframe src="~/BrifingDocs/@item.UploadedFile" &embedded="true" style="width:99%; height:300px;" frameborder="0"></iframe>
+                                                                    </div>
+                                                                }
+                                                                 </div>
+                                                             </div>
+                                                           <a id="acck_@item.Id" style="cursor:pointer;font-weight: bold; color: #1c94c4; " title="Click me"
+                                                           onclick="acknowledgeBrf('@item.Id','@item.CmId','@item.CmId')">Acknowledge</a>
+                                                    
+                                                </div>
+
+                                                @if (item.Quiz == "Yes" && !string.IsNullOrEmpty(item.Quiz))
+                                                {
+                                                    <div class="card-body" id="Quizdiv_@item.Id" style="display:none">
+                                                    </div>
+                                                }
+                                                
+
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <br />
+                                    index++;
+                                    index2++;
+                                }
+                        }
+                         @if (Model == null)
+                        {
+                            <span class="d-block p-2 bg-danger text-white">Brifing Does Not Exists</span>
+                            <br />
+                        }
+
+
+
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+<script>
+        function acknowledgeBrf(brifID,cmid,cim) 
+        {
+           $('#Briefdiv_' + brifID).slideUp("slow");
+
+             $.ajax({
+                url: "Briefings/AcknowledgeBrief/" + parseInt(brifID),
+                type: "GET",
+                success: function (response) { 
+                    if(response.success)
+                       {
+                        toastr.success(response.message);
+                        $.ajax({
+                            url: "Briefings/GetQuestion/" + brifID,
+                            type: "GET",
+                            success: function (response) {
+                                $('#Quizdiv_' + brifID).slideDown("slow");
+                                var questionHtml = `<form id="quickForm" action="/Briefings/QuizSubmit" class="div_@index" method="POST" enctype="multipart/form-data">@Html.AntiForgeryToken()`;
+                                if (response.length > 0 && response.length != 0) {
+                                    for (var i = 0; i < response.length; i++) {
+                                        questionHtml += `<div class="col-md-12 question-group" id="question">
+                                                                                                        <input type="hidden" name="[`+ i + `].BriefingId" value="` + response[i].briefingID + `"/>
+                                                                        <div class="form-group">
+                                                                                       <input type="hidden" name="[`+ i + `].QuestionID" class="form-control" value="` + response[i].id + `">
+                                                                               <span>Q&nbsp;`+ (i + 1) + `.&nbsp;` + response[i].question + `</span>
+                                                                        </div>
+                                                             <div class="row">
+                                                             <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                            <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"  name="[` + i + `].Answer"  value="1" title="OptionA">
+                                                                            <label for="exampleInputPassword1">`+ response[i].option1 + `</span>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                           <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"  name="[` + i + `].Answer" value="2" title="OptionB">
+                                                                           <label for="exampleInputPassword1">`+ response[i].option2 + `</span>
+                                                                </div>
+                                                             </div>
+
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                           <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"  name="[` + i + `].Answer" value="3" title="OptionC">
+                                                                           <label for="exampleInputPassword1">`+ response[i].option3 + `</span>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                           <input type='radio' id = "option` + response[i].briefingID + `_` + (i + 1) + `1"    name="[` + i + `].Answer"  value="4" title="OptionD">
+                                                                           <label for="exampleInputPassword1">`+ response[i].option4 + `</span>
+                                                                </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>`;
+                                    }
+                                    questionHtml += `<button class="btn btn-success" type="submit">Submit</button>`;
+                                    questionHtml += `</form>`;
+                                }
+                                
+                                $('#Quizdiv_' + brifID).append(questionHtml);
+                            }
+                        });
+
+
+                    }
+                    if (response.error) 
+                    {
+                        $('#Briefdiv_' + brifID).slideDown("slow");
+                        toastr.error(response.message);
+                    }
+                }
+            });
+        }
+</script>
+ <script>
+       $(function () {
+             $('#quickForm').validate({
+                rules: {
+                    CmId: {
+                        required: true,
+                    },
+                    ViewFor: {
+                        required: true,
+                    },
+                    Quiz: {
+                        required: true
+                    },
+                    UploadFile: {
+                        required: true
+                    },
+                    'CorrectAnswer[]': {
+                        required: true
+                    },
+                    'Answer4[]': {
+                        required: true
+                    },
+                    'Answer3[]': {
+                        required: true
+                    },
+                    'Answer2[]': {
+                        required: true
+                    },
+                    'Answer1[]': {
+                        required: true
+                    },
+                    'Question[]': {
+                        required: true
+                    },
+                    Remark2: {
+                        required: true
+                    },
+                    Remark1: {
+                        required: true
+                    },
+                    Heading: {
+                        required: true
+                    },
+                    FromDate: {
+                        required: true
+                    }
+                },
+                messages: {
+                    process: {
+                        required: "Please Select Process name"
+                    },
+                    pktfor: {
+                        required: "Please enter a PKT name",
+
+                    },
+                    name: {
+                        required: "Please provide a PKT name",
+                        minlength: "Your PKTName must be at least 5 characters long"
+                    },
+                    duration: "Please enter duration in minutes"
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+ <script type="text/javascript">
+        $("#quickForm").on("submit", function (e) {
+            e.preventDefault();
+
+            if ($("#quickForm").valid()) {
+
+                $.ajax({
+                    type: "post",
+                    url: $(this).attr('action'),
+                    dataType: 'text',
+                    headers: { "RequestVerificationToken": '@Html.AntiForgeryToken()' },
+                    data: {
+                        Name: $('#name').val(),
+                        TestDuration: $('#duration').val(),
+                        PKTForText: $('#pktfor').val(),
+                        Cm_Id: $('#process').val(),
+                        Process: $('#process option:selected').text(),
+
+                    },
+                    success: function (response) {
+                        obj = JSON.parse(response);
+                        if (obj.success) {
+                            toastr.success(obj.message);
+                            setTimeout(function () {
+                                $('#modal-default').modal('hide');
+                                location.reload();
+                            }, 1000);
+                        }
+
+                        if (obj.error) {
+                            toastr.error(obj.message);
+                        }
+
+
+                    },
+
+                });
+
+            }
+            else {
+                return false;
+            }
+
+
+        });
+    </script>
+}

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\inetpub\wwwroot\briefing</_PublishTargetUrl>
+    <History>False|2024-04-12T04:31:43.2744142Z;False|2024-04-12T10:00:30.9957132+05:30;True|2024-04-04T18:58:06.9073818+05:30;True|2024-04-04T18:41:45.9852893+05:30;True|2024-04-04T15:35:58.6735762+05:30;True|2024-04-04T15:18:56.0743943+05:30;True|2024-04-04T14:59:56.1564227+05:30;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

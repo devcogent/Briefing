@@ -1,0 +1,380 @@
+﻿@model IEnumerable<Briefing.Models.Entites.Auth>
+
+@{
+    ViewData["Title"] = "User List";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title"><b>User List</b></h2>
+                        <p class="float-right">
+                            <button type="button" class="btn btn-primary addnew" data-toggle="modal" data-target="#modal-default">
+                                Add New
+                            </button>
+                        </p>
+                    </div>
+                   <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Sr.No.</th>
+                                    <th>EMPID</th>
+                                    <th>NAME</th>
+                                    <th>CLIENT</th>
+                                    <th>PROCESS</th>
+                                    <th>Sub Process</th>
+                                    <th>GENDER</th>                                    
+                                    <th>Created On</th>
+                                    <th>Created By</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @if (Model != null)
+                                {
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                        <td>@index</td>
+                                        <td>@item.EmpID</td>
+                                        <td>@item.Name</td>
+                                        
+                                        <td>@item.Client</td>
+                                        <td>@item.Process</td>
+                                        <td>@item.Department</td>
+                                        <td>@item.Gender</td>
+                                        <td>@item.CreatedOn</td>
+                                        <td>@item.CreatedBy</td>
+                                            <td>
+                                               <a href="javaScript:void(0)" onclick="edit('@item.Id')"><i class="fas fa-edit"></i></a>  &nbsp;
+                                               <a href="javascript:void(0)" onclick="deleteUser('@item.Id')"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                            </td>
+                                       </tr>
+                                        index++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add User</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body card card-primary">
+                <form id="quickForm" asp-action="SaveUser" typeof="POST">
+                    <input type="hidden" name="Id" id="Id" />
+                    <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Employee Personal Details</h3>
+                            </div>
+                         <div class="card-body">
+                            <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Employee ID</label>
+                                <input type="text" name="EmpID" class="form-control" id="EmpID" placeholder="Enter Employee ID">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="exampleInputPassword1">Employee Name</label>
+                                <input type="text" name="Name" class="form-control" id="Name" placeholder="Enter Name">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Email ID</label>
+                                <input type="email" name="Email" class="form-control" id="Email" placeholder="Enter Email ID">
+
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                    <label>ReportsTo</label>
+                                    <input type="text" name="ReportsTo" class="form-control" id="ReportsTo" placeholder="Enter ReportsTo ID">
+                            </div>
+
+                                <div class="form-group col-md-2">
+                                    <label>User Type</label>
+                                    <select class="form-select select2bs4" name="userType" id="userType" style="width: 100%;">
+                                        <option value="">Select user Type</option>
+                                        <option value="0">CSA</option>
+                                        <option value="1">Manager</option>
+                                    </select>
+                                </div>
+                             <div class="form-group col-md-2">
+                                <label>Gender</label>
+                                <select class="form-select select2bs4" name="Gender" id="Gender" style="width: 100%;">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+
+                          
+                            <div class="form-group col-md-2" id="pwdcheck">
+                               <label>Are you Want To Change Password</label>
+                               <input type="checkbox"  class="form-checkbox" id="changepwd">
+                             </div>
+
+                            <div class="form-group col-md-2" id="pwddiv">
+                                <label>Password</label>
+                                <input type="password" name="Password" class="form-control" id="Password" placeholder="Enter Password">
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Employee Process Details</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Client</label>
+                                <select class="form-select select2bs4" name="Client" id="Client" style="width: 100%;">
+                                    <option value="">Select Client</option>
+                                    <option value="CBOI">CBOI</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Process</label>
+                                <select class="form-select select2bs4" name="Process" id="Process" style="width: 100%;">
+                                    <option value="">Select Process</option>
+                                    <option value="CBOI">CBOI</option>
+                                </select>
+                            </div>
+                             <div class="form-group col-md-4">
+                                <label>Sub Process</label>
+                                <select class="form-select select2bs4" name="Department" id="Department" style="width: 100%;">
+                                    <option value="">Select Sub Process</option>
+                                    <option value="2">CBOI</option>
+                                </select>
+                            </div>
+                            
+                       </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>                    
+                </form>
+            
+            </div>
+            <div class="modal-footer justify-content">
+                @* <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> *@
+                <button type="button" class="btn btn-danger float-md-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+ <script>
+
+        $(document).ready(function () {
+            $("#changepwd").change(function () {
+                if ($(this).is(":checked")) {
+                    $("#pwddiv").show();
+                } else {
+                    $("#pwddiv").hide();
+                }
+            });
+
+            $(".addnew").click(function () {
+                $("#pwdcheck").hide();
+                $('#quickForm').removeAttr('action');
+                $('#quickForm').attr('action', 'SaveUser');
+                $('.modal-title').text('Add User');
+                document.getElementById('quickForm').reset();
+            });
+        });
+
+
+        function deleteUser(id)
+        {
+            if (confirm("Are you sure want to delete ")) { 
+                $.ajax({
+                    url: "/Home/DeleteUser/" + id,
+                    type: "GET",
+                    success: function (response) {
+
+                        if (response.success){
+                            toastr.success(response.message);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        }
+
+                        if (response.error){
+                            toastr.error(response.message);
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function edit(id) {
+         
+            $.ajax({
+                url:"/Home/EditUser/"+id,
+                type:"GET",
+                success: function (response) {
+                    console.log(response);
+                    $('#Id').val(response.id);
+                    $("#EmpID").val(response.empID);
+                    $("#Email").val(response.email);
+                    $("#Department").val(response.cmid).change();
+                    $("#Name").val(response.name);
+                    $("#userType").val(response.userType).change();
+                    $("#ReportsTo").val(response.reportsTo);
+                    $("#Client").val(response.client).change();
+                    $("#Gender").val(response.gender).change();
+                    $("#Process").val(response.process).change();
+                     $('#quickForm').removeAttr('action');
+                    $('#quickForm').attr('action', 'UpdateUser');
+                    $('.modal-title').text('Update User')
+                    $('#pwddiv').hide();
+                    $("#pwdcheck").show();
+                    $('#modal-default').modal('show');
+
+                }
+            });
+
+        }
+
+       $(function () {
+           $('#quickForm').validate({
+                rules: {
+                    EmpID: {
+                        required: true,
+                    },
+                    Gender: {
+                        required: true,
+                    },
+                    Department: {
+                        required: true,
+                    },
+                    Client: {
+                        required: true,
+                    },
+                    Email: {
+                        required: true,
+                        email:true
+                    },
+                    Password: {
+                        required:true,
+                        minlength:5
+                     },
+                    userType: {
+                        required: true,
+                    },                    
+                    Name: {
+                        required: true,
+                    },
+                   ReportsTo: {
+                       required :true,
+                   },
+                    Process: {
+                        required: true
+                    },
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $("#quickForm").on("submit", function (e) {
+          e.preventDefault();
+            if ($("#quickForm").valid()) {
+
+
+                var ProcessText = $('#Process option:selected').text();
+              //  var DesignationTetx ="";// $('#Designation option:selected').text();
+                var clientName = $('#Client option:selected').text();
+
+                $.ajax({
+                    type: "post",
+                    url: $(this).attr('action'),
+                    dataType: 'text',
+                    headers: { "RequestVerificationToken": '@Html.AntiForgeryToken()' },
+                    data: {
+                        Id: $("#Id").val(),
+                        EmpID : $("#EmpID").val(),
+                        Email :  $("#Email").val(),
+                        CMID: $("#Department").val(),
+                        Name :  $("#Name").val(),
+                        Client: clientName,
+                        ReportsTo: $("#ReportsTo").val(),
+                        Department: $('#Department option:selected').text(),
+                        Gender : $("#Gender").val(),
+                        Process : ProcessText,
+                        Password : $("#Password").val(),
+                        userType: $("#userType").val()
+                    },
+                    success: function (response) {
+                        obj = JSON.parse(response);
+                        if (obj.success) {
+                            toastr.success(obj.message);
+                            setTimeout(function () {
+                                $('#modal-default').modal('hide');
+                                location.reload();
+                            }, 1000);
+                        }
+
+                        if (obj.error) {
+                            toastr.error(obj.message);
+                        }
+
+
+                    },
+
+                });
+
+            }
+            else {
+                return false;
+            }
+
+        });
+
+
+        
+
+    </script>
+}

@@ -1,0 +1,185 @@
+﻿@model List<CoverageReport>
+@{
+    ViewData["Title"] = "Coverage Reports";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title">Coverage Reports</h2>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="coverage" type="POST" asp-action="CoverageReport">
+                            <div class="row">
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group date" id="startDates" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input" id="startDate" name="startDate" data-target="#startDates" placeholder="From Date">
+                                        <div class="input-group-append" data-target="#startDates" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group date" id="endDates" data-target-input="nearest">
+                                        <input type="text" name="endDate" id="endDate" class="form-control datetimepicker-input" data-target="#endDates" placeholder="To Date">
+                                        <div class="input-group-append" data-target="#endDates" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-4 col-lg-4 col-sm-4">
+                                    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                        <div class="card-body tbl">
+
+                        <div class="spinner-border text-primary loader" role="status" style="margin-left: 43%;">
+                            <span class="visually-hidden"></span>
+                        </div>
+                        <table class="table table-bordered responsive" id="exampl">
+                                <thead>
+                                    <tr>
+                                        <th>Sr. No</th>
+                                        <th>Employee ID </th>
+                                        <th>Employee Name</th>
+                                        <th>Briefing Name</th>
+                                        <th>Created Date</th>
+                                        <th>Start Date</th>
+                                        <th>Acknowledge Date</th>
+                                        <th>Briefing For</th>
+                                        <th>Report To</th>
+                                        <th>Uploaded By</th>
+                                        <th>Process</th>
+                                        <th>Sub Process</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                </tbody>
+                              
+                            </table>
+                        </div>
+                    
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+
+        $('#endDates').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+
+        $('#startDates').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+        $('.tbl').hide();
+
+
+            $(function () {
+                $('#coverage').validate({
+                    rules: {
+                        startDate: {
+                            required: true,
+                        },
+                        endDate: {
+                            required: true
+                        },
+                    },
+                    errorElement: 'span',
+                    errorPlacement: function (error, element) {
+                        error.addClass('invalid-feedback');
+                        element.closest('.form-group').append(error);
+                    },
+                    highlight: function (element, errorClass, validClass) {
+                        $(element).addClass('is-invalid');
+                    },
+                    unhighlight: function (element, errorClass, validClass) {
+                        $(element).removeClass('is-invalid');
+                    }
+                });
+          });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#coverage').submit(function (e) {
+                e.preventDefault();
+                var startDates = $('#startDate').val();
+                var endDates = $('#endDate').val();
+
+                if ($('#coverage').valid()) {
+                    $('.tbl').show();
+                    $.ajax({
+                        url: 'CoverageReport', // Update with your controller action URL
+                        method: 'POST',
+                        data: { startDate: startDates, endDate: endDates },
+                        success: function (data) {
+                                $('#exampl').DataTable({
+                                dom: 'Bfrtip',
+                                buttons: [{
+                                    extend: 'collection',
+                                    text: 'Export',
+                                    buttons: [{
+                                        extend: 'excel',
+                                        title: 'Data export',
+                                        exportOptions: {
+                                            columns: "thead th:not(.noExport)"
+                                        }
+                                    }, {
+                                        extend: 'csv',
+                                        title: 'Data export',
+                                        exportOptions: {
+                                            columns: "thead th:not(.noExport)"
+                                        }
+                                    }]
+                                }],
+                                   processing: true,
+                                   destroy: true, // Destroy existing DataTable (if any)
+                                    data: data,
+                                    columns: [
+                                        { data: 'id' },
+                                        { data: 'employeeid' },
+                                        { data: 'employeename' },
+                                        { data: 'heading' },
+                                        { data: 'createdon' },
+                                        { data: 'fromdate' },
+                                        { data: 'acknowledge' },
+                                        { data: 'viewfor' },
+                                        { data: 'reportto' },
+                                        { data: 'createdby' },
+                                        { data: 'process' },
+                                        { data: 'subprocess' }
+                                    ]
+                                });
+                            $('.loader').hide();
+                         },
+                        error: function (error) {
+                            console.error('Error:', error);
+                            $('.loader').hide();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    
+    }

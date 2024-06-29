@@ -1,0 +1,452 @@
+﻿@model IEnumerable<Briefing.Models.Entities.Briefings>
+
+@{
+    ViewData["Title"] = "Briefing Master";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h2 class="card-title">Briefing List</h2>
+                        <p class="float-right">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default">
+                                Add New
+                            </button>
+                          
+                        </p>
+                    </div>
+                    @if (ViewBag.Success != null)
+                    {
+                        <div class="alert alert-success alert-dismissible">
+                            <strong>Great !</strong> @ViewBag.Success
+                        </div>
+                    }
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example2" class="table table-bordered table-hover responsive">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Heading)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Remark1)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Remark2)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.CreatedOn)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.CreatedBy)
+                                    </th>
+                                   
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.CmId)
+                                    </th>
+                                   
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.UploadedFile)
+                                    </th>
+                                  
+                                    <th>
+                                        Start Date
+                                    </th>
+                                    <th>
+                                        Briefing For
+                                    </th>
+                                    
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int index = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Heading)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Remark1)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Remark2)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                                        </td>
+                                       
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CmId)
+                                        </td>
+                                       
+                                        <td>
+                                          @if (!string.IsNullOrEmpty(item.UploadedFile))
+                                            {
+                                                int lastDotIndex = item.UploadedFile.LastIndexOf('.');
+                                               if (lastDotIndex >= 0 && lastDotIndex < item.UploadedFile.Length - 1)
+                                                {
+                                                    string fileExtension = item.UploadedFile.Substring(lastDotIndex).ToLower();
+                                                   if (fileExtension == ".pdf")
+                                                    {
+                                                        <a href="~/BrifingDocs/@item.UploadedFile" target="_blank"> Download File</a>
+                                                    }
+                                                    else if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png" || fileExtension == ".gif")
+                                                    {
+                                                        <img src="~/BrifingDocs/@item.UploadedFile" height="50px" width="50px" />
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p>Unsupported file type.</p>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <img src="~/BrifingDocs/noimage.jpg" height="50px" width="50px" />
+                                            }
+                                         </td>
+                                      
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FromDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ViewFor)
+                                        </td>
+                                        
+                                        <td>
+                                            <a href="javaScript::void(0)" onclick="editBriefing('@item.Id')"><i class="fas fa-edit"></i></a>&nbsp;
+                                            <a href="javaScript::void(0)" onclick="deleteBriefing('@item.Id')"><i class="fa fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Briefing</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body card card-primary">
+                <form id="quickForm" asp-action="Create" method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Client</label>&nbsp;<span class="text-danger">*</span>
+                                <select class="form-select select2bs4" name="CmId" id="client" style="width: 100%;">
+                                    <option value="">Please Select Client</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="heading">Heading</label>&nbsp;<span class="text-danger">*</span>
+                                <input type="text" name="Heading" class="form-control" id="heading" placeholder="enter brifing heading">
+                            </div>
+                           
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="uploadFile">Upload File</label>&nbsp;<span class="text-danger">*</span>
+                                <input type="file" name="UploadFile" class="form-control" id="uploadFile" accept=".jpg, .jpeg, .png, .pdf">
+                            </div>
+                            <div class="form-group">
+                                <label>Start Date and Time</label><span class="text-danger">*</span>
+                                <div class="input-group date" id="reservationdatetime" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" name="FromDate" data-target="#reservationdatetime">
+                                    <div class="input-group-append" data-target="#reservationdatetime" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" data-select2-id="30">
+                            <div class="form-group">
+                                <label for="remarks1">Remarks 1</label>&nbsp;<span class="text-danger">*</span>
+                                <textarea class="form-control" name="Remark1" id="remarks1" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6" data-select2-id="30">
+                            <div class="form-group">
+                                <label for="remarks2">Remarks 2</label>&nbsp;<span class="text-danger">*</span>
+                                <textarea class="form-control" name="Remark2" id="remarks2" rows="3"></textarea>
+                            </div>
+                        </div>
+
+
+
+                     </div>
+
+                    <div class="row" id="container"></div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content">
+                @* <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> *@
+                <button type="button" class="btn btn-danger float-md-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="edit-modal-default">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Briefing</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body card card-primary">
+                <form id="editquickForm" asp-action="Update" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="Id" class="form-control" id="Id">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Client</label>&nbsp;<span class="text-danger">*</span>
+                                <select class="form-select select2bs4" name="CmId" id="editclient" style="width: 100%;">
+                                    <option value="">Please Select Client</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="heading">Heading</label>&nbsp;<span class="text-danger">*</span>
+                                <input type="text" name="Heading" class="form-control" id="editheading" placeholder="enter brifing heading">
+                            </div>
+                            
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group image">
+                                <label for="uploadFile">Upload File</label>&nbsp;<span class="text-danger">*</span>
+                                <input type="file" name="UploadFile" class="form-control" id="edituploadFile" accept=".jpg, .jpeg, .png, .pdf">
+                            </div>
+                            <span class="text-success">Are you want to upload another image ? if yes please click </span>
+                            <input type="checkbox" id="imageclick" />
+
+                            <div class="form-group">
+                                <label>Start Date and Time</label><span class="text-danger">*</span>
+                                <div class="input-group date" id="reservationdatetime" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" name="FromDate" id="EditFromDate" data-target="#reservationdatetime">
+                                    <div class="input-group-append" data-target="#reservationdatetime" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" data-select2-id="30">
+                            <div class="form-group">
+                                <label for="remarks1">Remarks 1</label>&nbsp;<span class="text-danger">*</span>
+                                <textarea class="form-control" name="Remark1" id="editremarks1" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6" data-select2-id="30">
+                            <div class="form-group">
+                                <label for="remarks2">Remarks 2</label>&nbsp;<span class="text-danger">*</span>
+                                <textarea class="form-control" name="Remark2" id="editremarks2" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="container"></div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content">
+                @* <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> *@
+                <button type="button" class="btn btn-danger float-md-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+ 
+        $(function () {
+            $('.image').hide();
+            $('#imageclick').on('click', function () {
+
+                if ($("#imageclick").is(':checked')) {
+                    $('.image').show();
+                } else {
+                    $('.image').hide();
+                }
+
+            });
+         });
+        function deleteBriefing(id)
+        {
+            if (confirm("are you sure want to delete ?")) { 
+                $.ajax({
+                    url: "/Briefings/Delete/" + id,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message)
+                        }
+                        if (response.error) {
+                            toastr.error(response.message)
+                        }
+                    }
+                });
+            }
+        }
+        function editBriefing(id) {
+            
+            $.ajax({
+                url: "/Briefings/Edit/" + id,
+                type: 'GET',
+                success: function (response) {
+                    if (response.error) {
+                        toastr.error(response.message)
+                    } else {
+                        $('#editclient').val(response.cmId).change();
+                        $('#EditViewFor').val(response.viewFor).change();
+                        $('#editheading').val(response.heading);
+                        $('#editremarks1').val(response.remark1);
+                        $('#editremarks2').val(response.remark2);
+                        $('#EditFromDate').val(response.fromDate);
+                        $('#Id').val(response.id);
+                        $('#edit-modal-default').modal('show');
+                    }
+                }
+            });
+            
+        }
+   </script>
+    <script>
+        $(function () {
+
+            $('#reservationdatetime').datetimepicker({ 
+                format:'DD-MM-YYYY HH:mm:ss',
+                minDate: new Date(),
+                icons: { time: 'far fa-clock' } 
+            });
+
+            $.ajax({
+                url: '/Briefings/GetProcess',
+                type: 'GET',
+                success: function (response) {
+                     $.each(response, function (key, val) {
+                        $('#client').append('<option value="' + val.id + '">' + val.clientName + '|' + val.processName + '|' + val.subProcessName + '</option>')
+                        $('#editclient').append('<option value="' + val.id + '">' + val.clientName + '|' + val.processName + '|' + val.subProcessName + '</option>')
+                    });
+                }
+            });
+
+            $('#quickForm').validate({
+                rules: {
+                    CmId: {
+                        required: true,
+                    },
+                    Quiz: {
+                        required: true
+                    },
+                    UploadFile: {
+                        required: true
+                    },
+                    Remark2: {
+                        required:true
+                    },
+                    Remark1: {
+                        required: true
+                    },
+                    Heading: {
+                        required: true
+                    },
+                    FromDate: {
+                        required:true
+                    }
+                },
+                
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+
+            $('#editquickForm').validate({
+                rules: {
+                    CmId: {
+                        required: true,
+                    },
+                    UploadFile: {
+                        required: true
+                    },
+                    Remark2: {
+                        required: true
+                    },
+                    Remark1: {
+                        required: true
+                    },
+                    Heading: {
+                        required: true
+                    },
+                    FromDate: {
+                        required: true
+                    }
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+
+         });
+    </script>
+}
